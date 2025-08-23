@@ -1,0 +1,74 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+VEnvFrame-Env/
+.venv/
+venv/
+ENV/
+env/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Test and coverage
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+
+# Type checker and linters
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and temp files
+*.log
+logs/
+tmp/
+temp/
+
+# Database files (do not version control local DBs)
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+DB/sqlite/app.db
+
+# Local environment/config overrides
+.env
+.env.*
+*.local
+
+# Node/npm (if any)
+node_modules/
+
+# Redis dump (if generated locally)
+dump.rdb
+
+# Installer binaries
+package/*.exe
+
+# General caches
+.cache/
+
+# Python packaging misc
+MANIFEST

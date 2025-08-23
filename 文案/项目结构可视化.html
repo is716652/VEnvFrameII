@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEnvFrame 项目结构可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .structure-tree {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 5px solid #4facfe;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tree-line {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .tree-icon {
+            font-size: 18px;
+            margin-right: 8px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .tree-text {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .tree-indent-1 { margin-left: 20px; }
+        .tree-indent-2 { margin-left: 40px; }
+        .tree-indent-3 { margin-left: 60px; }
+        .tree-indent-4 { margin-left: 80px; }
+
+        .architecture-diagram {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .layer {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .layer-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .layer-content {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .component {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 150px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .component-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .component-desc {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .app-layer { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .service-layer { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .data-layer { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .infra-layer { background: linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%); }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .content { padding: 20px; }
+            .layer-content { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 VEnvFrame</h1>
+            <p>AI驱动的虚拟环境框架 - 项目结构可视化</p>
+        </div>
+
+        <div class="content">
+            <!-- 项目统计 -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">核心文件</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">主要模块</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">数据库支持</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">AI生成</div>
+                </div>
+            </div>
+
+            <!-- 项目结构树 -->
+            <h2 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">📁 项目文件结构</h2>
+            <div class="structure-tree">
+                <div class="tree-line">
+                    <span class="tree-icon">📁</span>
+                    <span class="tree-text"><strong>VEnvFrame/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">📋</span>
+                    <span class="tree-text">第一步-虚拟环境构建-系统提示词模板.md</span>
+                </div>
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">📝</span>
+                    <span class="tree-text">文案.md</span>
+                </div>
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">📖</span>
+                    <span class="tree-text">虚拟环境移植指南.md</span>
+                </div>
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">⚡</span>
+                    <span class="tree-text">activate_env.bat</span>
+                </div>
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">🔧</span>
+                    <span class="tree-text">fix_venv_path.bat</span>
+                </div>
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">📦</span>
+                    <span class="tree-text">requirements.txt</span>
+                </div>
+                
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">🗄️</span>
+                    <span class="tree-text"><strong>DB/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">📚</span>
+                    <span class="tree-text">数据库系统使用指南.md</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">⚙️</span>
+                    <span class="tree-text">database_config.json</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🎛️</span>
+                    <span class="tree-text">database_manager.py</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🔄</span>
+                    <span class="tree-text">db_switch.py</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🔴</span>
+                    <span class="tree-text"><strong>redis/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-3">
+                    <span class="tree-icon">🎯</span>
+                    <span class="tree-text">redis_manager.py</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">💾</span>
+                    <span class="tree-text"><strong>sqlite/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-3">
+                    <span class="tree-icon">📊</span>
+                    <span class="tree-text">app.db</span>
+                </div>
+                <div class="tree-line tree-indent-3">
+                    <span class="tree-icon">🎯</span>
+                    <span class="tree-text">sqlite_manager.py</span>
+                </div>
+
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">📊</span>
+                    <span class="tree-text"><strong>Monitor/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🌐</span>
+                    <span class="tree-text">app.py</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">⚙️</span>
+                    <span class="tree-text">config.json</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🎨</span>
+                    <span class="tree-text"><strong>templates/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-3">
+                    <span class="tree-icon">🖼️</span>
+                    <span class="tree-text">index.html</span>
+                </div>
+
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">🛠️</span>
+                    <span class="tree-text"><strong>Tools/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🔧</span>
+                    <span class="tree-text">fix_venv_path.ps1</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🐍</span>
+                    <span class="tree-text">fix_venv_path.py</span>
+                </div>
+
+                <div class="tree-line tree-indent-1">
+                    <span class="tree-icon">🏠</span>
+                    <span class="tree-text"><strong>VEnvFrame-Env/</strong></span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">⚙️</span>
+                    <span class="tree-text">pyvenv.cfg</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">📚</span>
+                    <span class="tree-text"><strong>Lib/site-packages/</strong> (50+ 依赖包)</span>
+                </div>
+                <div class="tree-line tree-indent-2">
+                    <span class="tree-icon">🚀</span>
+                    <span class="tree-text"><strong>Scripts/</strong> (可执行文件)</span>
+                </div>
+            </div>
+
+            <!-- 架构层次图 -->
+            <h2 style="color: #2c3e50; margin: 40px 0 20px; text-align: center;">🏗️ 系统架构层次</h2>
+            <div class="architecture-diagram">
+                <div class="layer app-layer">
+                    <div class="layer-title">应用层 (Application Layer)</div>
+                    <div class="layer-content">
+                        <div class="component">
+                            <div class="component-title">📊 监控系统</div>
+                            <div class="component-desc">Monitor/</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">🗄️ 数据库管理</div>
+                            <div class="component-desc">DB/</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">🛠️ 工具集</div>
+                            <div class="component-desc">Tools/</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer service-layer">
+                    <div class="layer-title">服务层 (Service Layer)</div>
+                    <div class="layer-content">
+                        <div class="component">
+                            <div class="component-title">🌐 Flask Web服务</div>
+                            <div class="component-desc">app.py</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">🎛️ 数据库连接池</div>
+                            <div class="component-desc">database_manager</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">🔧 路径修复</div>
+                            <div class="component-desc">fix_venv_path</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer data-layer">
+                    <div class="layer-title">数据层 (Data Layer)</div>
+                    <div class="layer-content">
+                        <div class="component">
+                            <div class="component-title">💾 SQLite</div>
+                            <div class="component-desc">app.db</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">🔴 Redis</div>
+                            <div class="component-desc">(可选配置)</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">🐬 MySQL</div>
+                            <div class="component-desc">(可选配置)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layer infra-layer">
+                    <div class="layer-title">基础层 (Infrastructure Layer)</div>
+                    <div class="layer-content">
+                        <div class="component">
+                            <div class="component-title">🏠 虚拟环境</div>
+                            <div class="component-desc">VEnvFrame-Env/</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">⚙️ 配置管理</div>
+                            <div class="component-desc">config.json</div>
+                        </div>
+                        <div class="component">
+                            <div class="component-title">⚡ 脚本工具</div>
+                            <div class="component-desc">activate.bat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; color: #6c757d;">
+                <p>🤖 本项目完全由 CodeBuddy AI 自动生成</p>
+                <p>展现了AI在复杂系统架构设计中的强大能力</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const components = document.querySelectorAll('.component');
+            components.forEach(component => {
+                component.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+
+            // 统计数字动画
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const finalNumber = stat.textContent;
+                const isPercentage = finalNumber.includes('%');
+                const number = parseInt(finalNumber);
+                let current = 0;
+                const increment = number / 50;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= number) {
+                        current = number;
+                        clearInterval(timer);
+                    }
+                    stat.textContent = Math.floor(current) + (isPercentage ? '%' : '+');
+                }, 50);
+            });
+        });
+    </script>
+</body>
+</html>

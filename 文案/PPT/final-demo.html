@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEnvFrame：AI驱动的虚拟环境框架 - 完整50页演示</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="demo-styles-enhanced.css">
+    <link rel="stylesheet" href="tooltip-styles.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <i class="fas fa-cube"></i>
+            <span>VEnvFrame 完整演示</span>
+        </div>
+        <div class="nav-controls">
+            <button class="nav-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+            <span class="page-counter"><span id="currentPage">1</span> / 32</span>
+            <button class="nav-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            <button class="nav-btn auto-play" id="autoPlayBtn">
+                <i class="fas fa-play"></i>
+                <span>自动播放</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 侧边栏目录 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>演示目录</h3>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="toc-section">
+                <h4>项目概览 (1-5)</h4>
+                <ul>
+                    <li><a href="#" data-page="1">项目介绍</a></li>
+                    <li><a href="#" data-page="2">核心特性</a></li>
+                    <li><a href="#" data-page="3">技术架构</a></li>
+                    <li><a href="#" data-page="4">项目结构</a></li>
+                    <li><a href="#" data-page="5">安装指南</a></li>
+                </ul>
+            </div>
+            <div class="toc-section">
+                <h4>专业精准的系统提示词 (6-8)</h4>
+                <ul>
+                    <li><a href="#" data-page="6">虚拟环境构建指南</a></li>
+                    <li><a href="#" data-page="7">虚拟环境移植指南</a></li>
+                    <li><a href="#" data-page="8">数据库系统使用指南</a></li>
+                </ul>
+            </div>
+            <div class="toc-section">
+                <h4>虚拟环境管理 (9-13)</h4>
+                <ul>
+                    <li><a href="#" data-page="9">环境创建</a></li>
+                    <li><a href="#" data-page="10">环境激活脚本</a></li>
+                    <li><a href="#" data-page="11">路径修复工具</a></li>
+                    <li><a href="#" data-page="12">环境迁移</a></li>
+                    <li><a href="#" data-page="13">依赖管理</a></li>
+                </ul>
+            </div>
+            <div class="toc-section">
+                <h4>数据库系统 (14-18)</h4>
+                <ul>
+                    <li><a href="#" data-page="14">数据库管理器</a></li>
+                    <li><a href="#" data-page="15">SQLite集成</a></li>
+                    <li><a href="#" data-page="16">MySQL支持</a></li>
+                    <li><a href="#" data-page="17">Redis缓存</a></li>
+                    <li><a href="#" data-page="18">数据库切换</a></li>
+                </ul>
+            </div>
+            <div class="toc-section">
+                <h4>监控系统 (19-23)</h4>
+                <ul>
+                    <li><a href="#" data-page="19">监控架构</a></li>
+                    <li><a href="#" data-page="20">Flask应用</a></li>
+                    <li><a href="#" data-page="21">实时数据</a></li>
+                    <li><a href="#" data-page="22">性能指标</a></li>
+                    <li><a href="#" data-page="23">告警系统</a></li>
+                </ul>
+            </div>
+            <div class="toc-section">
+                <h4>高保真文案演示 (24-26)</h4>
+                <ul>
+                    <li><a href="#" data-page="24">虚拟环境构建系统提示词模板展示</a></li>
+                    <li><a href="#" data-page="25">虚拟环境路径修复工具展示</a></li>
+                    <li><a href="#" data-page="26">项目结构可视化</a></li>
+                </ul>
+            </div>
+            <div class="toc-section">
+                <h4>项目总结 (29-32)</h4>
+                <ul>
+                    <li><a href="#" data-page="29">技术亮点总结</a></li>
+                    <li><a href="#" data-page="30">未来展望与致谢</a></li>
+                    <li><a href="#" data-page="31">实战演示</a></li>
+                    <li><a href="#" data-page="32">最终总结</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="slide-container" id="slideContainer">
+            <!-- 所有32页内容将通过JavaScript动态生成 -->
+        </div>
+    </main>
+
+    <!-- 进度条 -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- 加载脚本 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="real-code-content.js"></script>
+    <script src="enhanced-demo-combined.js"></script>
+</body>
+</html>

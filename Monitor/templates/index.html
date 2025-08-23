@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEnvFrame 监控面板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+        }
+
+        .python-icon { background: linear-gradient(45deg, #3776ab, #ffd43b); }
+        .env-icon { background: linear-gradient(45deg, #28a745, #20c997); }
+        .package-icon { background: linear-gradient(45deg, #6f42c1, #e83e8c); }
+        .db-icon { background: linear-gradient(45deg, #fd7e14, #dc3545); }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #1e7e34);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .package-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .package-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .db-controls {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .db-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .db-option {
+            padding: 8px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .db-option.active {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            border-color: #007bff;
+        }
+
+        .db-option:hover {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .config-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .port-config {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .port-input {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 VEnvFrame 监控面板</h1>
+            <p>虚拟环境与数据库管理中心</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <h3>🔄 正在加载系统信息...</h3>
+        </div>
+
+        <div id="dashboard" class="dashboard" style="display: none;">
+            <!-- Python 信息卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon python-icon">🐍</div>
+                    <div class="card-title">Python 环境</div>
+                </div>
+                <div id="python-info">
+                    <!-- Python 信息将在这里显示 -->
+                </div>
+            </div>
+
+            <!-- 虚拟环境信息卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon env-icon">📦</div>
+                    <div class="card-title">虚拟环境</div>
+                </div>
+                <div id="venv-info">
+                    <!-- 虚拟环境信息将在这里显示 -->
+                </div>
+            </div>
+
+            <!-- 包管理卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon package-icon">📚</div>
+                    <div class="card-title">已安装包</div>
+                </div>
+                <div id="package-info">
+                    <!-- 包信息将在这里显示 -->
+                </div>
+            </div>
+
+            <!-- 数据库管理卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon db-icon">🗄️</div>
+                    <div class="card-title">数据库管理</div>
+                </div>
+                <div id="database-info">
+                    <!-- 数据库信息将在这里显示 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 配置区域 -->
+        <div class="config-section" style="display: none;" id="config-section">
+            <div class="card-header">
+                <div class="card-icon" style="background: linear-gradient(45deg, #6c757d, #495057);">⚙️</div>
+                <div class="card-title">系统配置</div>
+            </div>
+            <div class="port-config">
+                <label class="info-label">监控端口:</label>
+                <input type="number" id="port-input" class="port-input" min="1" max="65535" value="88">
+                <button class="btn btn-primary" onclick="updatePort()">更新端口</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let systemData = null;
+
+        // 页面加载完成后获取系统信息
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemInfo();
+            loadConfig();
+        });
+
+        // 加载系统信息
+        async function loadSystemInfo() {
+            try {
+                const response = await fetch('/api/system/info');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    systemData = result.data;
+                    renderSystemInfo();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'grid';
+                    document.getElementById('config-section').style.display = 'block';
+                } else {
+                    showError('加载系统信息失败: ' + result.message);
+                }
+            } catch (error) {
+                showError('网络请求失败: ' + error.message);
+            }
+        }
+
+        // 加载配置信息
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    document.getElementById('port-input').value = result.data.port || 88;
+                }
+            } catch (error) {
+                console.error('加载配置失败:', error);
+            }
+        }
+
+        // 渲染系统信息
+        function renderSystemInfo() {
+            renderPythonInfo();
+            renderVenvInfo();
+            renderPackageInfo();
+            renderDatabaseInfo();
+        }
+
+        // 渲染Python信息
+        function renderPythonInfo() {
+            const pythonInfo = systemData.python;
+            const container = document.getElementById('python-info');
+            
+            container.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">版本</span>
+                    <span class="info-value">${pythonInfo.version || 'Unknown'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">平台</span>
+                    <span class="info-value">${pythonInfo.platform || 'Unknown'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">可执行文件</span>
+                    <span class="info-value" style="font-size: 0.8rem;">${pythonInfo.executable || 'Unknown'}</span>
+                </div>
+            `;
+        }
+
+        // 渲染虚拟环境信息
+        function renderVenvInfo() {
+            const venvInfo = systemData.venv;
+            const container = document.getElementById('venv-info');
+            
+            const statusBadge = venvInfo.exists ? 
+                `<span class="status-badge status-success">✓ 存在</span>` :
+                `<span class="status-badge status-error">✗ 不存在</span>`;
+            
+            const activeBadge = venvInfo.active ?
+                `<span class="status-badge status-success">✓ 已激活</span>` :
+                `<span class="status-badge status-warning">⚠ 未激活</span>`;
+            
+            container.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">名称</span>
+                    <span class="info-value">${venvInfo.name || 'Unknown'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">状态</span>
+                    ${statusBadge}
+                </div>
+                <div class="info-item">
+                    <span class="info-label">激活状态</span>
+                    ${activeBadge}
+                </div>
+                <div class="info-item">
+                    <span class="info-label">路径</span>
+                    <span class="info-value" style="font-size: 0.8rem;">${venvInfo.path || 'Unknown'}</span>
+                </div>
+            `;
+        }
+
+        // 渲染包信息
+        function renderPackageInfo() {
+            const packageInfo = systemData.packages;
+            const container = document.getElementById('package-info');
+            
+            if (packageInfo.error) {
+                container.innerHTML = `<div class="error">获取包信息失败: ${packageInfo.error}</div>`;
+                return;
+            }
+            
+            let packagesHtml = `
+                <div class="info-item">
+                    <span class="info-label">已安装包数量</span>
+                    <span class="info-value">${packageInfo.count || 0}</span>
+                </div>
+                <div class="package-list">
+            `;
+            
+            if (packageInfo.packages && packageInfo.packages.length > 0) {
+                packageInfo.packages.forEach(pkg => {
+                    packagesHtml += `
+                        <div class="package-item">
+                            <span><strong>${pkg.name}</strong></span>
+                            <span>${pkg.version}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            packagesHtml += '</div>';
+            container.innerHTML = packagesHtml;
+        }
+
+        // 渲染数据库信息
+        function renderDatabaseInfo() {
+            const dbInfo = systemData.database;
+            const container = document.getElementById('database-info');
+            
+            if (dbInfo.error) {
+                container.innerHTML = `<div class="error">获取数据库信息失败: ${dbInfo.error}</div>`;
+                return;
+            }
+            
+            let dbHtml = `
+                <div class="info-item">
+                    <span class="info-label">当前数据库</span>
+                    <span class="info-value">${dbInfo.current_database || 'Unknown'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">支持数据库</span>
+                    <span class="info-value">${dbInfo.supported_count || 0} 种</span>
+                </div>
+                <div class="db-controls">
+                    <div class="info-label" style="margin-bottom: 10px;">数据库切换:</div>
+                    <div class="db-selector">
+            `;
+            
+            if (dbInfo.databases && dbInfo.databases.length > 0) {
+                dbInfo.databases.forEach(db => {
+                    const activeClass = db.current ? 'active' : '';
+                    const enabledText = db.enabled ? '' : ' (禁用)';
+                    dbHtml += `
+                        <div class="db-option ${activeClass}" 
+                             onclick="switchDatabase('${db.name}')"
+                             ${!db.enabled ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                            ${db.display_name || db.name}${enabledText}
+                        </div>
+                    `;
+                });
+            }
+            
+            dbHtml += `
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-success" onclick="testDatabase()">🔍 测试连接</button>
+                        <button class="btn btn-primary" onclick="loadSystemInfo()">🔄 刷新信息</button>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = dbHtml;
+        }
+
+        // 切换数据库
+        async function switchDatabase(dbName) {
+            try {
+                const response = await fetch('/api/database/switch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ database: dbName })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showSuccess(result.message);
+                    // 重新加载系统信息
+                    setTimeout(() => {
+                        loadSystemInfo();
+                    }, 1000);
+                } else {
+                    showError(result.message);
+                }
+            } catch (error) {
+                showError('切换数据库失败: ' + error.message);
+            }
+        }
+
+        // 测试数据库连接
+        async function testDatabase() {
+            try {
+                showInfo('正在测试数据库连接...');
+                
+                const response = await fetch('/api/database/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showSuccess('数据库连接测试成功！' + (result.message ? ' ' + result.message : ''));
+                } else {
+                    showError('数据库连接测试失败: ' + result.message);
+                }
+            } catch (error) {
+                showError('测试数据库连接失败: ' + error.message);
+            }
+        }
+
+        // 更新端口配置
+        async function updatePort() {
+            try {
+                const port = parseInt(document.getElementById('port-input').value);
+                
+                if (!port || port < 1 || port > 65535) {
+                    showError('端口号必须是1-65535之间的整数');
+                    return;
+                }
+                
+                const response = await fetch('/api/config/port', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ port: port })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showSuccess(result.message);
+                } else {
+                    showError(result.message);
+                }
+            } catch (error) {
+                showError('更新端口失败: ' + error.message);
+            }
+        }
+
+        // 显示成功消息
+        function showSuccess(message) {
+            removeMessages();
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.container').insertBefore(successDiv, document.getElementById('dashboard'));
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+
+        // 显示错误消息
+        function showError(message) {
+            removeMessages();
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.container').insertBefore(errorDiv, document.getElementById('dashboard'));
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // 显示信息消息
+        function showInfo(message) {
+            removeMessages();
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'success';
+            infoDiv.textContent = message;
+            document.querySelector('.container').insertBefore(infoDiv, document.getElementById('dashboard'));
+            
+            setTimeout(() => {
+                infoDiv.remove();
+            }, 3000);
+        }
+
+        // 移除现有消息
+        function removeMessages() {
+            const messages = document.querySelectorAll('.error, .success');
+            messages.forEach(msg => msg.remove());
+        }
+
+        // 定时刷新系统信息（每30秒）
+        setInterval(() => {
+            if (systemData) {
+                loadSystemInfo();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

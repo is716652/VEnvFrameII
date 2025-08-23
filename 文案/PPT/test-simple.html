@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEnvFrame 测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .slide {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .slide.active {
+            display: block;
+        }
+        .nav-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background: #3730a3;
+        }
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VEnvFrame PPT 测试页面</h1>
+        
+        <div class="controls">
+            <button class="nav-btn" onclick="loadPage(1)">第1页</button>
+            <button class="nav-btn" onclick="loadPage(6)">第6页</button>
+            <button class="nav-btn" onclick="loadPage(7)">第7页</button>
+            <button class="nav-btn" onclick="loadPage(8)">第8页</button>
+            <span id="currentPageDisplay">当前页: 1</span>
+        </div>
+        
+        <div id="slideContainer">
+            <!-- 页面内容将在这里显示 -->
+        </div>
+        
+        <div id="errorLog" style="background: #fee; padding: 10px; margin: 10px 0; border-radius: 5px; display: none;">
+            <h3>错误日志:</h3>
+            <pre id="errorContent"></pre>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 32;
+        const pageContents = {};
+        
+        // 错误处理
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            const errorLog = document.getElementById('errorLog');
+            const errorContent = document.getElementById('errorContent');
+            errorLog.style.display = 'block';
+            errorContent.textContent += `错误: ${msg}\n文件: ${url}\n行号: ${lineNo}\n列号: ${columnNo}\n\n`;
+            return false;
+        };
+        
+        // 测试基本的页面内容生成
+        function createTestContent(pageNum) {
+            return `
+                <div class="slide active" id="slide-${pageNum}">
+                    <h2>第${pageNum}页测试内容</h2>
+                    <p>这是第${pageNum}页的测试内容。如果你能看到这个内容，说明基本的JavaScript执行是正常的。</p>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                        <h3>测试信息:</h3>
+                        <ul>
+                            <li>当前时间: ${new Date().toLocaleString()}</li>
+                            <li>页面编号: ${pageNum}</li>
+                            <li>总页数: ${totalPages}</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 加载页面函数
+        function loadPage(pageNum) {
+            console.log(`尝试加载第${pageNum}页`);
+            
+            try {
+                const slideContainer = document.getElementById('slideContainer');
+                const currentPageDisplay = document.getElementById('currentPageDisplay');
+                
+                if (!slideContainer) {
+                    throw new Error('找不到slideContainer元素');
+                }
+                
+                // 清空容器
+                slideContainer.innerHTML = '';
+                
+                // 生成内容
+                const content = createTestContent(pageNum);
+                slideContainer.innerHTML = content;
+                
+                // 更新当前页面显示
+                currentPage = pageNum;
+                if (currentPageDisplay) {
+                    currentPageDisplay.textContent = `当前页: ${currentPage}`;
+                }
+                
+                console.log(`成功加载第${pageNum}页`);
+                
+            } catch (error) {
+                console.error('加载页面时出错:', error);
+                const errorLog = document.getElementById('errorLog');
+                const errorContent = document.getElementById('errorContent');
+                errorLog.style.display = 'block';
+                errorContent.textContent += `加载第${pageNum}页时出错: ${error.message}\n\n`;
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成，开始初始化');
+            loadPage(1);
+        });
+        
+        console.log('测试脚本已加载');
+    </script>
+</body>
+</html>
