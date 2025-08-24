@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="960" height="540" fill="url(#g)" rx="16"/>
+  <rect x="12" y="12" width="936" height="40" rx="10" fill="#111827"/>
+  <circle cx="34" cy="32" r="6" fill="#ef4444"/>
+  <circle cx="54" cy="32" r="6" fill="#f59e0b"/>
+  <circle cx="74" cy="32" r="6" fill="#10b981"/>
+  <text x="100" y="38" fill="#9ca3af" font-family="Consolas, monospace" font-size="16">db_switch CLI</text>
+
+  <g font-family="Consolas, monospace" font-size="16" fill="#e5e7eb">
+    <text x="32" y="90">(VEnvFrame-Env) &gt; cd DB</text>
+    <text x="32" y="118">(VEnvFrame-Env) DB&gt; python db_switch.py list</text>
+    <text x="32" y="146" fill="#93c5fd">可用数据库: ✅ 当前 sqlite / ⚪ 可用 redis / ❌ 禁用 mysql</text>
+
+    <text x="32" y="190">(VEnvFrame-Env) DB&gt; python db_switch.py current</text>
+    <text x="32" y="218" fill="#a7f3d0">当前数据库: sqlite - SQLite本地数据库</text>
+
+    <text x="32" y="262">(VEnvFrame-Env) DB&gt; python db_switch.py switch redis</text>
+    <text x="32" y="290" fill="#34d399">✅ 已切换到数据库: redis</text>
+
+    <text x="32" y="334">(VEnvFrame-Env) DB&gt; python db_switch.py test</text>
+    <text x="32" y="362" fill="#fef3c7">✅ 连接测试成功 (Redis 7.x, used_memory 12MB)</text>
+  </g>
+</svg>

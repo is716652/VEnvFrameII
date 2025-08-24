@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VEnvFrameII – 高保真演示站（虚拟环境 / 数据库 / 监控）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <header class="max-w-6xl mx-auto px-6 pt-10 pb-8">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">VEnvFrameII 高保真演示站</h1>
+        <p class="mt-2 text-slate-600">以真实代码与可视化 SVG 展示三大模块：虚拟环境、数据库系统与监控界面</p>
+      </div>
+      <button id="themeToggle" class="shrink-0 rounded-lg px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm">切换主题</button>
+    </div>
+
+    <nav class="mt-6 border-b border-slate-200 flex gap-4" role="tablist" aria-label="模块切换">
+      <button class="tab-btn active" data-target="#tab-venv" aria-selected="true">虚拟环境</button>
+      <button class="tab-btn" data-target="#tab-db" aria-selected="false">数据库</button>
+      <button class="tab-btn" data-target="#tab-monitor" aria-selected="false">监控</button>
+    </nav>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 pb-16">
+    <!-- 虚拟环境 -->
+    <section id="tab-venv" class="tab-panel grid md:grid-cols-2 gap-6">
+      <div class="card">
+        <h2 class="card-title">真实代码片段：虚拟环境修复</h2>
+        <p class="card-desc">摘自 Tools/fix_venv_path.py（查找 Python 3.12.8 并修复 venv 配置）</p>
+        <pre class="code"><code># excerpt from Tools/fix_venv_path.py
+possible_paths = [
+    r"C:\\Python312\\python.exe",
+    r"C:\\Users\\%USERNAME%\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    shutil.which("python"), shutil.which("python3"), shutil.which("python3.12"),
+]
+for path in possible_paths:
+    if path and os.path.exists(path):
+        result = subprocess.run([path, "-c", "import platform;print(platform.python_version())"],
+                                capture_output=True, text=True, timeout=10)
+        if result.returncode == 0 and result.stdout.strip() == '3.12.8':
+            return os.path.abspath(path)
+
+# 修复 pyvenv.cfg 中的 home / executable / command
+if line.startswith('home = '):
+    new_lines.append(f'home = {python_home}\n')
+elif line.startswith('executable = '):
+    new_lines.append(f'executable = {python_exe}\n')</code></pre>
+
+        <h3 class="mt-6 font-semibold">一键构建（片段）: build_env.bat</h3>
+        <pre class="code"><code>REM 解析镜像设置（命令行 > 配置文件 > 默认无）
+if /i "%MIRROR%"=="tsinghua" set "PIP_ARGS=--index-url https://pypi.tuna.tsinghua.edu.cn/simple"
+...
+:HAVE_PY312
+echo 使用 Python 3.12.8: %PY_EXE%
+if not exist "%VENV_DIR%\Scripts\python.exe" (
+  "%PY_EXE%" -m venv "%VENV_DIR%"
+)</code></pre>
+      </div>
+      <div class="card flex items-center justify-center">
+        <img src="./assets/svg/venv_cli.svg" alt="虚拟环境命令行演示" class="w-full h-auto" />
+      </div>
+      <div class="card flex items-center justify-center">
+        <img src="./assets/svg/db_cli.svg" alt="db_switch 命令行演示" class="w-full h-auto" />
+      </div>
+    </section>
+
+    <!-- 数据库 -->
+    <section id="tab-db" class="tab-panel hidden grid md:grid-cols-2 gap-6">
+      <div class="card">
+        <h2 class="card-title">真实代码片段：数据库管理器</h2>
+        <p class="card-desc">摘自 DB/database_manager.py（统一连接与切换）</p>
+        <pre class="code"><code>def set_current_database(self, db_name: str) -> bool:
+    if db_name not in self.config['databases']: return False
+    if not self.config['databases'][db_name]['enabled']: return False
+    self.config['current_database'] = db_name
+    self._save_config(); return True
+
+def get_connection(self, db_name: str = None):
+    if db_name is None: db_name = self.get_current_database()
+    if db_name in self.connections and self._is_connection_valid(self.connections[db_name], db_name):
+        return self.connections[db_name]
+    cfg = self.get_database_config(db_name)
+    if cfg['type'] == 'sqlite': conn = sqlite3.connect(cfg['config']['database_path'], timeout=cfg['config'].get('timeout',30), check_same_thread=cfg['config'].get('check_same_thread', False))
+    elif cfg['type'] == 'redis': conn = redis.Redis(host=cfg['config']['host'], port=cfg['config']['port'], db=cfg['config'].get('db',0), password=cfg['config'].get('password'), decode_responses=cfg['config'].get('decode_responses', True))
+    elif cfg['type'] == 'mysql': conn = pymysql.connect(host=cfg['config']['host'], port=cfg['config']['port'], user=cfg['config']['user'], password=cfg['config']['password'], database=cfg['config']['database'])
+    else: raise ValueError('不支持的数据库类型')
+    self.connections[db_name] = conn; return conn</code></pre>
+
+        <h3 class="mt-6 font-semibold">数据库配置（片段）: DB/database_config.json</h3>
+        <pre class="code"><code>{
+  "current_database": "sqlite",
+  "databases": {
+    "sqlite": {"type": "sqlite", "config": {"database_path": "./sqlite/app.db"}, "enabled": true},
+    "redis":  {"type": "redis",  "config": {"host": "192.168.27.21", "port": 6379, "db": 2}, "enabled": true},
+    "mysql":  {"type": "mysql",  "config": {"host": "localhost", "port": 3306}, "enabled": false}
+  }
+}</code></pre>
+      </div>
+      <div class="space-y-6">
+        <div class="card flex items-center justify-center">
+          <img src="./assets/svg/db_status.svg" alt="数据库系统结构/状态" class="w-full h-auto" />
+        </div>
+        <div class="card flex items-center justify-center">
+          <img src="./assets/svg/db_cli.svg" alt="db_switch 命令行演示" class="w-full h-auto" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 监控 -->
+    <section id="tab-monitor" class="tab-panel hidden grid md:grid-cols-2 gap-6">
+      <div class="card">
+        <h2 class="card-title">真实代码片段：监控接口</h2>
+        <p class="card-desc">摘自 Monitor/app.py（系统信息与数据库切换 API）</p>
+        <pre class="code"><code>@app.route('/api/system/info')
+def get_system_info():
+    info = {
+        "python": monitor.get_python_info(),
+        "venv": monitor.get_venv_info(),
+        "packages": monitor.get_installed_packages(),
+        "database": monitor.get_database_info()
+    }
+    return jsonify({"status": "success", "data": info})
+
+@app.route('/api/database/switch', methods=['POST'])
+def switch_database():
+    data = request.get_json(); db_name = data.get('database')
+    with open(config_path,'r',encoding='utf-8') as f: cfg = json.load(f)
+    if db_name not in cfg.get("databases", {}):
+        return jsonify({"status":"error","message": f"不支持的数据库类型: {db_name}"})
+    cfg["current_database"] = db_name
+    with open(config_path,'w',encoding='utf-8') as f: json.dump(cfg,f,ensure_ascii=False,indent=2)
+    return jsonify({"status":"success","message":f"已切换到 {db_name} 数据库"})</code></pre>
+      </div>
+      <div class="card flex items-center justify-center">
+        <img src="./assets/svg/monitor_dashboard.svg" alt="监控面板示意" class="w-full h-auto" />
+      </div>
+    </section>
+
+    <section class="mt-10">
+      <div class="card">
+        <h2 class="card-title">快速上手与下载</h2>
+        <div class="mt-4 grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="font-medium">克隆与构建</p>
+            <pre class="code"><code>git clone https://github.com/is716652/VEnvFrameII.git
+cd VEnvFrameII
+build_env.bat
+activate_env.bat</code></pre>
+          </div>
+          <div>
+            <p class="font-medium">文档与指南</p>
+            <ul class="list-disc ml-6 text-sm leading-7">
+              <li><a class="a" href="../../开发环境与数据库-AI上手指南.md">开发环境与数据库-AI上手指南（中文）</a></li>
+              <li><a class="a" href="../../Developer-Environment-and-Database-AI-Quickstart-Guide.md">Developer Environment & Database – AI Quickstart Guide（English）</a></li>
+              <li><a class="a" href="../../30秒上手.txt">30秒上手.txt</a></li>
+              <li><a class="a" href="https://github.com/is716652/VEnvFrameII.git" target="_blank" rel="noreferrer">GitHub 下载地址</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-6 pb-10 text-sm text-slate-500">
+      <p>© 2025 VEnvFrameII. MIT License.</p>
+      <p>
+        <a class="a" href="https://github.com/is716652/VEnvFrameII" target="_blank" rel="noreferrer">GitHub Project</a>
+        ·
+        <a class="a" href="../../项目说明.md" target="_blank">中文项目说明</a>
+        ·
+        <a class="a" href="../../开发环境与数据库-AI上手指南.md" target="_blank">中文上手指南</a>
+        ·
+        <a class="a" href="../../Developer-Environment-and-Database-AI-Quickstart-Guide.md" target="_blank">English Quickstart</a>
+        ·
+        <a class="a" href="../../30秒上手.txt" target="_blank">30 秒上手</a>
+      </p>
+    </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>

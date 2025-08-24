@@ -1,0 +1,25 @@
+[30秒上手 - 仅命令步骤]
+
+1) 修复/构建环境（任选其一）
+   .\fix_venv_path.bat
+   # 如修复失败或版本不一致：
+   .\build_env.bat tsinghua
+
+2) 激活并验证
+   .\activate_env.bat
+   where python
+   python --version
+
+3) 选择/确认数据库
+   cd DB
+   python db_switch.py current
+   python db_switch.py list
+   # 示例切换：
+   python db_switch.py switch redis
+   python db_switch.py test
+
+4) 快速自检
+   python ..\DB\test_database_system.py
+
+5) 如遇问题
+   阅读根目录《开发环境与数据库-AI上手指南.md》

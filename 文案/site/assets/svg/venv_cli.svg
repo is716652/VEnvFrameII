@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="960" height="540" fill="url(#g)" rx="16"/>
+  <rect x="12" y="12" width="936" height="40" rx="10" fill="#111827"/>
+  <circle cx="34" cy="32" r="6" fill="#ef4444"/>
+  <circle cx="54" cy="32" r="6" fill="#f59e0b"/>
+  <circle cx="74" cy="32" r="6" fill="#10b981"/>
+  <text x="100" y="38" fill="#9ca3af" font-family="Consolas, monospace" font-size="16">VEnvFrameII – Terminal</text>
+
+  <g font-family="Consolas, monospace" font-size="16" fill="#e5e7eb">
+    <text x="32" y="90">C:\\VEnvFrameII&gt; build_env.bat</text>
+    <text x="32" y="118" fill="#34d399">[完成] 严格模式：虚拟环境构建/补全已执行（Python 3.12.8）。</text>
+    <text x="32" y="160">C:\\VEnvFrameII&gt; activate_env.bat</text>
+    <text x="32" y="188" fill="#93c5fd">(VEnvFrame-Env) &gt; python --version  ➜  Python 3.12.8</text>
+    <text x="32" y="230">(VEnvFrame-Env) &gt; python Tools\\fix_venv_path.py</text>
+    <text x="32" y="258" fill="#34d399">✅ 虚拟环境正常工作: Python 3.12.8 | pip 24.x</text>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#0b1220" rx="16"/>
+  <text x="40" y="50" fill="#e5e7eb" font-family="Inter, Segoe UI, sans-serif" font-size="20">监控面板（示意）</text>
+  <g font-family="Inter, Segoe UI, sans-serif" font-size="14">
+    <rect x="60" y="90" width="250" height="140" rx="12" fill="#111827"/>
+    <text x="80" y="120" fill="#93c5fd">Python</text>
+    <text x="80" y="150" fill="#e5e7eb">3.12.8</text>
+    <text x="80" y="180" fill="#94a3b8">Windows / x64</text>
+
+    <rect x="350" y="90" width="250" height="140" rx="12" fill="#111827"/>
+    <text x="370" y="120" fill="#a7f3d0">虚拟环境</text>
+    <text x="370" y="150" fill="#e5e7eb">VEnvFrame-Env</text>
+    <text x="370" y="180" fill="#fef3c7">✓ 已就绪 / pip OK</text>
+
+    <rect x="640" y="90" width="250" height="140" rx="12" fill="#111827"/>
+    <text x="660" y="120" fill="#fca5a5">包统计</text>
+    <text x="660" y="150" fill="#e5e7eb">已安装：128</text>
+
+    <rect x="60" y="260" width="830" height="190" rx="14" fill="#0f172a" stroke="#1f2937"/>
+    <text x="80" y="290" fill="#e5e7eb">数据库</text>
+    <text x="80" y="322" fill="#a7f3d0">current: sqlite</text>
+    <text x="80" y="352" fill="#93c5fd">切换：sqlite / redis / mysql</text>
+    <text x="80" y="382" fill="#fef3c7">测试结果：✅ success</text>
+  </g>
+</svg>
